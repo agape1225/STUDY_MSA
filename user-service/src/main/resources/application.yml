@@ -7,7 +7,7 @@ spring:
     name: user-service
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/study_msa?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/study_msa?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
     username: root
     password: 1248
 
