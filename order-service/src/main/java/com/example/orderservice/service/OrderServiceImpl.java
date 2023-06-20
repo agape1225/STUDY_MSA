@@ -28,6 +28,7 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public OrderDto createOrder(OrderDto orderDetails) {
         orderDetails.setOrderId(UUID.randomUUID().toString());
+        System.out.println(orderDetails.toString());
         orderDetails.setTotalPrice(orderDetails.getQty() * orderDetails.getUnitPrice());
 
         ModelMapper mapper = new ModelMapper();

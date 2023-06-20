@@ -3,6 +3,7 @@ package com.example.orderservice.controller;
 import com.example.orderservice.VO.RequestOrder;
 import com.example.orderservice.VO.ResponseOrder;
 import com.example.orderservice.dto.OrderDto;
+import com.example.orderservice.jpa.OrderEntity;
 import com.example.orderservice.service.OrderService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -11,6 +12,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/order-service")
@@ -38,6 +42,8 @@ public class OrderController {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
+        //System.out.println(orderDetails);
+
         OrderDto orderDto = mapper.map(orderDetails, OrderDto.class);
         orderDto.setUserId(userId);
         OrderDto createdOrder = orderService.createOrder(orderDto);
@@ -48,5 +54,18 @@ public class OrderController {
 
     }
 
+    @GetMapping("/{userId}/orders")
+
+    public ResponseEntity<List<ResponseOrder>> getOrder(@PathVariable("userId") String userId){
+        Iterable<OrderEntity> orderList = orderService.getOrderByUserId(userId);
+
+        List<ResponseOrder> result = new ArrayList<>();
+
+        orderList.forEach(v -> {
+            result.add(new ModelMapper().map(v, ResponseOrder.class));
+        });
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
 
 }
