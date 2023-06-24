@@ -43,9 +43,7 @@ public class UserController {
 
     @GetMapping("/welcome")
     public String welcome(){
-
         return greeting.getMessage();
-
     }
 
     @PostMapping("/users")
