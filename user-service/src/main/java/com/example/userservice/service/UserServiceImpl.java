@@ -28,6 +28,19 @@ public class UserServiceImpl implements UserService{
         this.passwordEncoder = passwordEncoder;
 
     }
+
+    @Override
+    public UserDto getUserDetailByEmail(String email) {
+
+        UserEntity userEntity = userRepository.findByEmail(email);
+
+        if(userEntity == null)
+            throw new UsernameNotFoundException(email);
+
+        UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
+        return userDto;
+    }
+
     @Override
     public UserDto createUser(UserDto userDto) {
         userDto.setUserID(UUID.randomUUID().toString());
