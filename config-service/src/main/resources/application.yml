@@ -9,4 +9,3 @@ spring:
       server:
         git:
           uri: file:///${user.home}\programming\git-local\
-          
