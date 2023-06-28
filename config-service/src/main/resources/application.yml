@@ -4,10 +4,14 @@ server:
 spring:
   application:
     name: config-service
+  profiles:
+    active: native
   cloud:
     config:
       server:
+        native:
+          search-locations: C:\Users\user\programming\native-file-repo
         git:
           #uri: file:///${user.home}\programming\git-local\
-          default-label: master
-          uri: https://github.com/agape1225/STUDY_MSA/tree/main/git-config-yml
+          #default-label: master
+          uri: https://github.com/agape1225/msa-config-yml
