@@ -8,5 +8,6 @@ spring:
     config:
       server:
         git:
-          uri: file:///${user.home}\programming\git-local\
+          #uri: file:///${user.home}\programming\git-local\
           default-label: master
+          uri: https://github.com/agape1225/STUDY_MSA/tree/main/git-config-yml
