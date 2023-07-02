@@ -4,6 +4,12 @@ server:
 spring:
   application:
     name: config-service
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    stream:
+      username: guest
+      password: guest
   profiles:
     active: native
   cloud:
@@ -15,3 +21,9 @@ spring:
           #uri: file:///${user.home}\programming\git-local\
           #default-label: master
           uri: https://github.com/agape1225/msa-config-yml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, busrefresh
