@@ -1,5 +1,7 @@
 package com.example.userservice;
 
+import com.example.userservice.error.FeignErrorDecoder;
+import feign.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
@@ -27,4 +29,14 @@ public class UserServiceApplication {
     public RestTemplate getRestTemplate(){
         return new RestTemplate();
     }
+
+    @Bean
+    public Logger.Level feginLoggerLevel(){
+        return Logger.Level.FULL;
+    }
+
+    /*@Bean
+    public FeignErrorDecoder getFeignErrorDecoder(){
+        return new FeignErrorDecoder();
+    }*/
 }
