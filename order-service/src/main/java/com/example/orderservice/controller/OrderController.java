@@ -4,6 +4,7 @@ import com.example.orderservice.VO.RequestOrder;
 import com.example.orderservice.VO.ResponseOrder;
 import com.example.orderservice.dto.OrderDto;
 import com.example.orderservice.jpa.OrderEntity;
+import com.example.orderservice.messagequeue.KafkaProducer;
 import com.example.orderservice.service.OrderService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -21,11 +22,13 @@ import java.util.List;
 public class OrderController {
     Environment env;
     OrderService orderService;
+    KafkaProducer kafkaProducer;
 
     @Autowired
-    public OrderController(Environment env, OrderService catalogService){
+    public OrderController(Environment env, OrderService catalogService, KafkaProducer kafkaProducer){
         this.env = env;
         this.orderService = catalogService;
+        this.kafkaProducer = kafkaProducer;
     }
 
     @GetMapping("/health_check")
@@ -50,12 +53,13 @@ public class OrderController {
 
         ResponseOrder responseOrder = mapper.map(createdOrder, ResponseOrder.class);
 
+        kafkaProducer.send("example-catalog-topic", orderDto);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(responseOrder);
 
     }
 
     @GetMapping("/{userId}/orders")
-
     public ResponseEntity<List<ResponseOrder>> getOrder(@PathVariable("userId") String userId){
         Iterable<OrderEntity> orderList = orderService.getOrderByUserId(userId);
 
