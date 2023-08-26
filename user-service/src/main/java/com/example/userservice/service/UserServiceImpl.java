@@ -7,11 +7,15 @@ import com.example.userservice.jpa.UserEntity;
 import com.example.userservice.jpa.UserRepository;
 import feign.FeignException;
 import feign.Response;
+
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.spi.MatchingStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
@@ -36,19 +40,22 @@ public class UserServiceImpl implements UserService{
     Environment env;
     RestTemplate restTemplate;
     OrderServiceClient orderServiceClient;
+    CircuitBreakerFactory circuitBreakerFactory;
+
 
     @Autowired
-
     public UserServiceImpl(UserRepository userRepository,
                            BCryptPasswordEncoder passwordEncoder,
                            Environment env,
                            RestTemplate restTemplate,
-                           OrderServiceClient orderServiceClient){
+                           OrderServiceClient orderServiceClient,
+                           CircuitBreakerFactory circuitBreakerFactory){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.env = env;
         this.restTemplate = restTemplate;
         this.orderServiceClient = orderServiceClient;
+        this.circuitBreakerFactory = circuitBreakerFactory;
 
     }
 
@@ -86,24 +93,13 @@ public class UserServiceImpl implements UserService{
         if(userEntity == null)
             throw new UsernameNotFoundException("user not found");
         UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
-        //List<ResponseOrder> orders = new ArrayList<>();
 
-        /*Using rest template*/
-        //String orderUrl = "";
-//        String orderUrl = String.format(env.getProperty("order_service.url"), userId);
-//        ResponseEntity<List<ResponseOrder>> orderListResponse =  restTemplate.exchange(orderUrl, HttpMethod.GET, null,
-//                new ParameterizedTypeReference<List<ResponseOrder>>() {
-//        });
-//        List<ResponseOrder> orderList = orderListResponse.getBody();
+        /*error decoder*/
+        //List<ResponseOrder> orderList = orderServiceClient.getOrders(userId);
 
-
-        /*List<ResponseOrder> orderList = null;
-        try{
-            orderList = orderServiceClient.getOrders(userId);
-        } catch (FeignException ex){
-            log.error(ex.getMessage());
-        }*/
-        List<ResponseOrder> orderList = orderServiceClient.getOrders(userId);
+        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitBreaker");
+        List<ResponseOrder> orderList =
+                circuitBreaker.run(() -> orderServiceClient.getOrders(userId), throwable -> new ArrayList<>());
 
         userDto.setOrders(orderList);
 
