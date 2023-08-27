@@ -5,10 +5,9 @@ server:
 spring:
   application:
     name: user-service
-
   zipkin:
     base-url: http://127.0.0.1:9411
-    enabled: false
+    enabled: true
   sleuth:
     sampler:
       probability: 1.0
@@ -59,7 +58,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: refresh, health, beans, busrefresh
+        include: refresh, health, beans, busrefresh, info, metrics, prometheus
 
 #token:
 #  expiration_time: 86400000
